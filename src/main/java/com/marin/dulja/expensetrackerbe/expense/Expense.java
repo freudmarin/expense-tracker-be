@@ -35,4 +35,9 @@ public class Expense {
 
     @Column(nullable = false)
     private LocalDate date;
+
+    // Explicit setter to avoid potential Lombok edge cases on some build environments
+    public void setDate(LocalDate date) {
+        this.date = date;
+    }
 }
