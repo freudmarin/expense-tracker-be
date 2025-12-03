@@ -7,7 +7,9 @@ WORKDIR /workspace
 COPY .mvn/ .mvn/
 COPY mvnw mvnw
 COPY pom.xml .
-RUN ./mvnw -q -B -e -DskipTests dependency:go-offline
+# Ensure the Maven wrapper has Unix line endings and execute permission in Linux containers
+RUN sed -i 's/\r$//' mvnw && chmod +x mvnw \
+    && ./mvnw -q -B -e -DskipTests dependency:go-offline
 
 COPY src src
 RUN ./mvnw -q -B -DskipTests package
