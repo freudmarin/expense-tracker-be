@@ -21,8 +21,9 @@ public class ExpenseController {
     }
 
     @GetMapping
-    public List<ExpenseResponse> list(@RequestHeader("X-Client-Id") String clientId) {
-        return service.list(clientId);
+    public List<ExpenseResponse> list(@RequestHeader("X-Client-Id") String clientId,
+                                      @RequestParam(value = "categoryId", required = false) UUID categoryId) {
+        return service.list(clientId, categoryId);
     }
 
     @GetMapping("/{id}")

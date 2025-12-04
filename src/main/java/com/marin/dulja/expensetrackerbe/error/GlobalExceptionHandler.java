@@ -1,5 +1,6 @@
 package com.marin.dulja.expensetrackerbe.error;
 
+import com.marin.dulja.expensetrackerbe.category.CategoryNotFoundException;
 import com.marin.dulja.expensetrackerbe.expense.ExpenseNotFoundException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -16,6 +17,14 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(ExpenseNotFoundException.class)
     public ResponseEntity<Map<String, Object>> handleNotFound(ExpenseNotFoundException ex) {
+        Map<String, Object> body = new HashMap<>();
+        body.put("error", "not_found");
+        body.put("message", ex.getMessage());
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(body);
+    }
+
+    @ExceptionHandler(CategoryNotFoundException.class)
+    public ResponseEntity<Map<String, Object>> handleNotFound(CategoryNotFoundException ex) {
         Map<String, Object> body = new HashMap<>();
         body.put("error", "not_found");
         body.put("message", ex.getMessage());

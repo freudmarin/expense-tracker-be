@@ -1,5 +1,6 @@
 package com.marin.dulja.expensetrackerbe.expense;
 
+import com.marin.dulja.expensetrackerbe.category.Category;
 import jakarta.persistence.*;
 
 import java.math.BigDecimal;
@@ -29,6 +30,14 @@ public class Expense {
 
     @Column(nullable = false)
     private LocalDate date;
+
+    // Comma separated list of tags for simple storage
+    @Column(length = 500)
+    private String tags;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "category_id")
+    private Category categoryRef;
 
     public Expense() {
     }
@@ -79,5 +88,21 @@ public class Expense {
 
     public void setDate(LocalDate date) {
         this.date = date;
+    }
+
+    public String getTags() {
+        return tags;
+    }
+
+    public void setTags(String tags) {
+        this.tags = tags;
+    }
+
+    public Category getCategoryRef() {
+        return categoryRef;
+    }
+
+    public void setCategoryRef(Category categoryRef) {
+        this.categoryRef = categoryRef;
     }
 }

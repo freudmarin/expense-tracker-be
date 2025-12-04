@@ -4,6 +4,8 @@ import jakarta.validation.constraints.*;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.util.List;
+import java.util.UUID;
 
 public record ExpenseRequest(
         @NotBlank(message = "title is required")
@@ -16,5 +18,11 @@ public record ExpenseRequest(
         BigDecimal amount,
 
         @NotNull(message = "date is required")
-        LocalDate date
+        LocalDate date,
+
+        // Optional new structured reference to a Category
+        UUID categoryId,
+
+        @Size(max = 50)
+        List<@Size(min = 1, max = 50) String> tags
 ) {}
