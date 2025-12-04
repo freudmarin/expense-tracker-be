@@ -1,5 +1,7 @@
 package com.marin.dulja.expensetrackerbe.expense.dto;
 
+import com.marin.dulja.expensetrackerbe.category.dto.CategoryResponse;
+
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
@@ -10,6 +12,6 @@ public record ExpenseResponse(
         String title,
         BigDecimal amount,
         LocalDate date,
-        UUID categoryId,
+        CategoryResponse category,
         List<String> tags
 ) {}

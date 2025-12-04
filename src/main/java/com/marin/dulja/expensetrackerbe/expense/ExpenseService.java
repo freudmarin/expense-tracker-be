@@ -1,5 +1,6 @@
 package com.marin.dulja.expensetrackerbe.expense;
 
+import com.marin.dulja.expensetrackerbe.category.dto.CategoryResponse;
 import com.marin.dulja.expensetrackerbe.expense.dto.ExpenseRequest;
 import com.marin.dulja.expensetrackerbe.expense.dto.ExpenseResponse;
 import com.marin.dulja.expensetrackerbe.category.Category;
@@ -27,8 +28,10 @@ public class ExpenseService {
 
     private static ExpenseResponse toResponse(Expense e) {
         List<String> tags = parseTags(e.getTags());
-        UUID categoryId = e.getCategoryRef() != null ? e.getCategoryRef().getId() : null;
-        return new ExpenseResponse(e.getId(), e.getTitle(), e.getAmount(), e.getDate(), categoryId, tags);
+        CategoryResponse categoryResponse = e.getCategoryRef() != null
+                ? new CategoryResponse(e.getCategoryRef().getId(), e.getCategoryRef().getName())
+                : null;
+        return new ExpenseResponse(e.getId(), e.getTitle(), e.getAmount(), e.getDate(), categoryResponse, tags);
     }
 
     private static List<String> parseTags(String tagsStr) {
