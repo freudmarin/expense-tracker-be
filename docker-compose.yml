@@ -2,9 +2,9 @@ version: '3.9'
 services:
   db:
     image: postgres:16
-    container_name: expense_db
+    container_name: personal_finance_db
     environment:
-      POSTGRES_DB: expense_db
+      POSTGRES_DB: personal_finance_db
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
     ports:
@@ -19,13 +19,13 @@ services:
 
   app:
     build: .
-    image: expense-tracker-be:latest
+    image: personal-finance-tracker-be:latest
     depends_on:
       db:
         condition: service_healthy
     environment:
       SPRING_PROFILES_ACTIVE: dev
-      SPRING_DATASOURCE_URL: jdbc:postgresql://db:5432/expense_db
+      SPRING_DATASOURCE_URL: jdbc:postgresql://db:5432/personal_finance_db
       SPRING_DATASOURCE_USERNAME: postgres
       SPRING_DATASOURCE_PASSWORD: postgres
       JAVA_OPTS: -Xms256m -Xmx512m
