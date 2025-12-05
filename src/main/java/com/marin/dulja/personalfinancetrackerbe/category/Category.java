@@ -1,4 +1,4 @@
-package com.marin.dulja.expensetrackerbe.category;
+package com.marin.dulja.personalfinancetrackerbe.category;
 
 import jakarta.persistence.*;
 

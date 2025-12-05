@@ -1,4 +1,4 @@
-package com.marin.dulja.expensetrackerbe.expense.dto;
+package com.marin.dulja.personalfinancetrackerbe.transaction.dto;
 
 import jakarta.validation.constraints.*;
 
@@ -7,7 +7,7 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.UUID;
 
-public record ExpenseRequest(
+public record TransactionRequest(
         @NotBlank(message = "title is required")
         @Size(max = 200)
         String title,
@@ -19,6 +19,11 @@ public record ExpenseRequest(
 
         @NotNull(message = "date is required")
         LocalDate date,
+
+        // New required type field: "income" or "expense"
+        @NotBlank(message = "type is required")
+        @Pattern(regexp = "^(income|expense)$", message = "type must be either 'income' or 'expense'")
+        String type,
 
         // Optional new structured reference to a Category
         UUID categoryId,

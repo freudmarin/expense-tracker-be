@@ -1,7 +1,7 @@
-package com.marin.dulja.expensetrackerbe.category;
+package com.marin.dulja.personalfinancetrackerbe.category;
 
-import com.marin.dulja.expensetrackerbe.category.dto.CategoryRequest;
-import com.marin.dulja.expensetrackerbe.category.dto.CategoryResponse;
+import com.marin.dulja.personalfinancetrackerbe.category.dto.CategoryRequest;
+import com.marin.dulja.personalfinancetrackerbe.category.dto.CategoryResponse;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

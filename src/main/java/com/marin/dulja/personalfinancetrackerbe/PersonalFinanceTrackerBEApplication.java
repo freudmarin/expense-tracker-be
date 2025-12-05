@@ -1,13 +1,13 @@
-package com.marin.dulja.expensetrackerbe;
+package com.marin.dulja.personalfinancetrackerbe;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication
-public class ExpenseTrackerBeApplication {
+public class PersonalFinanceTrackerBEApplication {
 
     static void main(String[] args) {
-        SpringApplication.run(ExpenseTrackerBeApplication.class, args);
+        SpringApplication.run(PersonalFinanceTrackerBEApplication.class, args);
     }
 
 }

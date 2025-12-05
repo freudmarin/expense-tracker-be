@@ -1,7 +1,7 @@
-package com.marin.dulja.expensetrackerbe.error;
+package com.marin.dulja.personalfinancetrackerbe.error;
 
-import com.marin.dulja.expensetrackerbe.category.CategoryNotFoundException;
-import com.marin.dulja.expensetrackerbe.expense.ExpenseNotFoundException;
+import com.marin.dulja.personalfinancetrackerbe.category.CategoryNotFoundException;
+import com.marin.dulja.personalfinancetrackerbe.transaction.TransactionNotFoundException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.FieldError;
@@ -15,8 +15,8 @@ import java.util.Map;
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
-    @ExceptionHandler(ExpenseNotFoundException.class)
-    public ResponseEntity<Map<String, Object>> handleNotFound(ExpenseNotFoundException ex) {
+    @ExceptionHandler(TransactionNotFoundException.class)
+    public ResponseEntity<Map<String, Object>> handleNotFound(TransactionNotFoundException ex) {
         Map<String, Object> body = new HashMap<>();
         body.put("error", "not_found");
         body.put("message", ex.getMessage());

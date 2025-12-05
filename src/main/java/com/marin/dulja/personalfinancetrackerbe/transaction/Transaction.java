@@ -1,6 +1,6 @@
-package com.marin.dulja.expensetrackerbe.expense;
+package com.marin.dulja.personalfinancetrackerbe.transaction;
 
-import com.marin.dulja.expensetrackerbe.category.Category;
+import com.marin.dulja.personalfinancetrackerbe.category.Category;
 import jakarta.persistence.*;
 
 import java.math.BigDecimal;
@@ -8,10 +8,10 @@ import java.time.LocalDate;
 import java.util.UUID;
 
 @Entity
-@Table(name = "expenses", indexes = {
-        @Index(name = "idx_expenses_client_id", columnList = "client_id")
+@Table(name = "transactions", indexes = {
+        @Index(name = "idx_transactions_client_id", columnList = "client_id")
 })
-public class Expense {
+public class Transaction {
 
     @Id
     @GeneratedValue
@@ -39,10 +39,14 @@ public class Expense {
     @JoinColumn(name = "category_id")
     private Category categoryRef;
 
-    public Expense() {
+    // New: type of transaction - "income" or "expense"
+    @Column(nullable = false, length = 10)
+    private String type;
+
+    public Transaction() {
     }
 
-    public Expense(UUID id, String clientId, String title, BigDecimal amount, LocalDate date) {
+    public Transaction(UUID id, String clientId, String title, BigDecimal amount, LocalDate date) {
         this.id = id;
         this.clientId = clientId;
         this.title = title;
@@ -104,5 +108,13 @@ public class Expense {
 
     public void setCategoryRef(Category categoryRef) {
         this.categoryRef = categoryRef;
+    }
+
+    public String getType() {
+        return type;
+    }
+
+    public void setType(String type) {
+        this.type = type;
     }
 }

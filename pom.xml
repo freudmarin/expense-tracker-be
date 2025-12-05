@@ -9,10 +9,10 @@
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
     <groupId>com.marin.dulja</groupId>
-    <artifactId>expense-tracker-be</artifactId>
+    <artifactId>personal-finance-tracker-be</artifactId>
     <version>0.0.1-SNAPSHOT</version>
-    <name>expense-tracker-be</name>
-    <description>expense-tracker-be</description>
+    <name>personal-finance-tracker-be</name>
+    <description>personal-finance-tracker-be</description>
     <url/>
     <licenses>
         <license/>

@@ -1,4 +1,4 @@
-CREATE TABLE IF NOT EXISTS expenses (
+CREATE TABLE IF NOT EXISTS transactions (
     id UUID PRIMARY KEY,
     client_id VARCHAR(100) NOT NULL,
     title VARCHAR(200) NOT NULL,
@@ -6,4 +6,4 @@ CREATE TABLE IF NOT EXISTS expenses (
     date DATE NOT NULL
 );
 
-CREATE INDEX IF NOT EXISTS idx_expenses_client_id ON expenses(client_id);
+CREATE INDEX IF NOT EXISTS idx_transactions_client_id ON transactions(client_id);

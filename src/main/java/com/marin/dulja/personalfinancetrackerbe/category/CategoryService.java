@@ -1,8 +1,8 @@
-package com.marin.dulja.expensetrackerbe.category;
+package com.marin.dulja.personalfinancetrackerbe.category;
 
-import com.marin.dulja.expensetrackerbe.category.dto.CategoryRequest;
-import com.marin.dulja.expensetrackerbe.category.dto.CategoryResponse;
-import com.marin.dulja.expensetrackerbe.expense.ExpenseRepository;
+import com.marin.dulja.personalfinancetrackerbe.category.dto.CategoryRequest;
+import com.marin.dulja.personalfinancetrackerbe.category.dto.CategoryResponse;
+import com.marin.dulja.personalfinancetrackerbe.transaction.TransactionRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -14,11 +14,11 @@ import java.util.UUID;
 public class CategoryService {
 
     private final CategoryRepository repository;
-    private final ExpenseRepository expenseRepository;
+    private final TransactionRepository transactionRepository;
 
-    public CategoryService(CategoryRepository repository, ExpenseRepository expenseRepository) {
+    public CategoryService(CategoryRepository repository, TransactionRepository transactionRepository) {
         this.repository = repository;
-        this.expenseRepository = expenseRepository;
+        this.transactionRepository = transactionRepository;
     }
 
     public List<CategoryResponse> list(String clientId) {
@@ -50,8 +50,8 @@ public class CategoryService {
     public void delete(UUID id, String clientId) {
         boolean exists = repository.existsByIdAndClientId(id, clientId);
         if (!exists) throw new CategoryNotFoundException(id);
-        // First delete all expenses that belong to this client and reference the category
-        expenseRepository.deleteByClientIdAndCategoryRef_Id(clientId, id);
+        // First delete all transactions that belong to this client and reference the category
+        transactionRepository.deleteByClientIdAndCategoryRef_Id(clientId, id);
         // Then delete the category itself
         repository.deleteByIdAndClientId(id, clientId);
     }

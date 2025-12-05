@@ -1,11 +1,11 @@
-package com.marin.dulja.expensetrackerbe.expense;
+package com.marin.dulja.personalfinancetrackerbe.transaction;
 
-import com.marin.dulja.expensetrackerbe.category.dto.CategoryResponse;
-import com.marin.dulja.expensetrackerbe.expense.dto.ExpenseRequest;
-import com.marin.dulja.expensetrackerbe.expense.dto.ExpenseResponse;
-import com.marin.dulja.expensetrackerbe.category.Category;
-import com.marin.dulja.expensetrackerbe.category.CategoryNotFoundException;
-import com.marin.dulja.expensetrackerbe.category.CategoryRepository;
+import com.marin.dulja.personalfinancetrackerbe.category.dto.CategoryResponse;
+import com.marin.dulja.personalfinancetrackerbe.transaction.dto.TransactionRequest;
+import com.marin.dulja.personalfinancetrackerbe.transaction.dto.TransactionResponse;
+import com.marin.dulja.personalfinancetrackerbe.category.Category;
+import com.marin.dulja.personalfinancetrackerbe.category.CategoryNotFoundException;
+import com.marin.dulja.personalfinancetrackerbe.category.CategoryRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -16,22 +16,22 @@ import java.util.UUID;
 
 @Service
 @Transactional(readOnly = true)
-public class ExpenseService {
+public class TransactionService {
 
-    private final ExpenseRepository repository;
+    private final TransactionRepository repository;
     private final CategoryRepository categoryRepository;
 
-    public ExpenseService(ExpenseRepository repository, CategoryRepository categoryRepository) {
+    public TransactionService(TransactionRepository repository, CategoryRepository categoryRepository) {
         this.repository = repository;
         this.categoryRepository = categoryRepository;
     }
 
-    private static ExpenseResponse toResponse(Expense e) {
+    private static TransactionResponse toResponse(Transaction e) {
         List<String> tags = parseTags(e.getTags());
         CategoryResponse categoryResponse = e.getCategoryRef() != null
                 ? new CategoryResponse(e.getCategoryRef().getId(), e.getCategoryRef().getName())
                 : null;
-        return new ExpenseResponse(e.getId(), e.getTitle(), e.getAmount(), e.getDate(), categoryResponse, tags);
+        return new TransactionResponse(e.getId(), e.getTitle(), e.getAmount(), e.getDate(), e.getType(), categoryResponse, tags);
     }
 
     private static List<String> parseTags(String tagsStr) {
@@ -54,36 +54,44 @@ public class ExpenseService {
         return String.join(",", cleaned);
     }
 
-    public List<ExpenseResponse> list(String clientId) {
+    public List<TransactionResponse> list(String clientId) {
         return repository.findAllByClientIdOrderByDateDesc(clientId)
                 .stream()
-                .map(ExpenseService::toResponse)
+                .map(TransactionService::toResponse)
                 .toList();
     }
 
-    public List<ExpenseResponse> list(String clientId, UUID categoryId) {
-        List<Expense> items = (categoryId != null)
-                ? repository.findAllByClientIdAndCategoryRef_IdOrderByDateDesc(clientId, categoryId)
-                : repository.findAllByClientIdOrderByDateDesc(clientId);
-        return items
-                .stream()
-                .map(ExpenseService::toResponse)
-                .toList();
+    public List<TransactionResponse> list(String clientId, String type, UUID categoryId) {
+        List<Transaction> items;
+        if (type != null && !type.isBlank()) {
+            if (categoryId != null) {
+                items = repository.findAllByClientIdAndTypeAndCategoryRef_IdOrderByDateDesc(clientId, type, categoryId);
+            } else {
+                items = repository.findAllByClientIdAndTypeOrderByDateDesc(clientId, type);
+            }
+        } else {
+            // fallback to existing behavior
+            items = (categoryId != null)
+                    ? repository.findAllByClientIdAndCategoryRef_IdOrderByDateDesc(clientId, categoryId)
+                    : repository.findAllByClientIdOrderByDateDesc(clientId);
+        }
+        return items.stream().map(TransactionService::toResponse).toList();
     }
 
-    public ExpenseResponse getOne(UUID id, String clientId) {
-        Expense e = repository.findByIdAndClientId(id, clientId)
-                .orElseThrow(() -> new ExpenseNotFoundException(id));
+    public TransactionResponse getOne(UUID id, String clientId) {
+        Transaction e = repository.findByIdAndClientId(id, clientId)
+                .orElseThrow(() -> new TransactionNotFoundException(id));
         return toResponse(e);
     }
 
     @Transactional
-    public ExpenseResponse create(ExpenseRequest req, String clientId) {
-        Expense e = new Expense();
+    public TransactionResponse create(TransactionRequest req, String clientId) {
+        Transaction e = new Transaction();
         e.setClientId(clientId);
         e.setTitle(req.title());
         e.setAmount(req.amount());
         e.setDate(req.date());
+        e.setType(req.type());
         // If categoryId provided, link to Category (must belong to client)
         if (req.categoryId() != null) {
             Category cat = categoryRepository.findByIdAndClientId(req.categoryId(), clientId)
@@ -93,17 +101,18 @@ public class ExpenseService {
             e.setCategoryRef(null);
         }
         e.setTags(joinTags(req.tags()));
-        Expense saved = repository.save(e);
+        Transaction saved = repository.save(e);
         return toResponse(saved);
     }
 
     @Transactional
-    public ExpenseResponse update(UUID id, ExpenseRequest req, String clientId) {
-        Expense e = repository.findByIdAndClientId(id, clientId)
-                .orElseThrow(() -> new ExpenseNotFoundException(id));
+    public TransactionResponse update(UUID id, TransactionRequest req, String clientId) {
+        Transaction e = repository.findByIdAndClientId(id, clientId)
+                .orElseThrow(() -> new TransactionNotFoundException(id));
         e.setTitle(req.title());
         e.setAmount(req.amount());
         e.setDate(req.date());
+        e.setType(req.type());
         if (req.categoryId() != null) {
             Category cat = categoryRepository.findByIdAndClientId(req.categoryId(), clientId)
                     .orElseThrow(() -> new CategoryNotFoundException(req.categoryId()));
@@ -119,7 +128,7 @@ public class ExpenseService {
     public void delete(UUID id, String clientId) {
         boolean exists = repository.existsByIdAndClientId(id, clientId);
         if (!exists) {
-            throw new ExpenseNotFoundException(id);
+            throw new TransactionNotFoundException(id);
         }
         repository.deleteByIdAndClientId(id, clientId);
     }

@@ -1,4 +1,4 @@
-package com.marin.dulja.expensetrackerbe.category.dto;
+package com.marin.dulja.personalfinancetrackerbe.category.dto;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
