@@ -32,13 +32,31 @@ CREATE TABLE IF NOT EXISTS refresh_tokens (
 
 -- Remove legacy client_id model from categories and transactions and link to users instead
 ALTER TABLE categories DROP COLUMN IF EXISTS client_id;
-ALTER TABLE categories ADD COLUMN IF NOT EXISTS user_id UUID;
+DO $$ BEGIN
+    IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name='categories' AND column_name='user_id') THEN
+        ALTER TABLE categories ADD COLUMN user_id UUID;
+    END IF;
+END $$;
 CREATE INDEX IF NOT EXISTS idx_categories_user_id ON categories(user_id);
 CREATE UNIQUE INDEX IF NOT EXISTS uk_categories_user_name ON categories(user_id, name);
-ALTER TABLE categories ADD CONSTRAINT IF NOT EXISTS fk_categories_user FOREIGN KEY (user_id) REFERENCES users (id);
+DO $$ BEGIN
+    IF NOT EXISTS (
+        SELECT 1 FROM information_schema.table_constraints WHERE table_name='categories' AND constraint_name='fk_categories_user') THEN
+        ALTER TABLE categories ADD CONSTRAINT fk_categories_user FOREIGN KEY (user_id) REFERENCES users (id);
+    END IF;
+END $$;
 
 ALTER TABLE transactions DROP COLUMN IF EXISTS client_id;
-ALTER TABLE transactions ADD COLUMN IF NOT EXISTS user_id UUID;
+DO $$ BEGIN
+    IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name='transactions' AND column_name='user_id') THEN
+        ALTER TABLE transactions ADD COLUMN user_id UUID;
+    END IF;
+END $$;
 CREATE INDEX IF NOT EXISTS idx_transactions_user_id ON transactions(user_id);
 CREATE INDEX IF NOT EXISTS idx_transactions_user_id_type ON transactions(user_id, type);
-ALTER TABLE transactions ADD CONSTRAINT IF NOT EXISTS fk_transactions_user FOREIGN KEY (user_id) REFERENCES users (id);
+DO $$ BEGIN
+    IF NOT EXISTS (
+        SELECT 1 FROM information_schema.table_constraints WHERE table_name='transactions' AND constraint_name='fk_transactions_user') THEN
+        ALTER TABLE transactions ADD CONSTRAINT fk_transactions_user FOREIGN KEY (user_id) REFERENCES users (id);
+    END IF;
+END $$;
