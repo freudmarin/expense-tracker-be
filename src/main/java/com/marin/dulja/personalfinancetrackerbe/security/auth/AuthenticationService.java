@@ -8,11 +8,13 @@ import com.marin.dulja.personalfinancetrackerbe.security.token.RefreshTokenServi
 import com.marin.dulja.personalfinancetrackerbe.user.User;
 import com.marin.dulja.personalfinancetrackerbe.user.UserRepository;
 import jakarta.validation.Valid;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.server.ResponseStatusException;
 
 @Service
 public class AuthenticationService {
@@ -41,7 +43,7 @@ public class AuthenticationService {
     @Transactional
     public AuthResponse login(@Valid AuthRequest request) {
         var auth = authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(request.getUsername(), request.getPassword()));
+                new UsernamePasswordAuthenticationToken(request.getEmail(), request.getPassword()));
         CustomUserDetails userDetails = (CustomUserDetails) auth.getPrincipal();
         var accessToken = jwtService.generateAccessToken(userDetails.getUser());
         RefreshToken refreshToken = refreshTokenService.createRefreshToken(userDetails.getUser());
@@ -50,14 +52,19 @@ public class AuthenticationService {
 
     @Transactional
     public void register(@Valid AuthRequest request) {
-        if (userRepository.existsByUsername(request.getUsername())) {
-            throw new IllegalArgumentException("Username already in use");
+        try {
+            if (userRepository.existsByEmail(request.getEmail())) {
+                // Always return generic error, do not reveal if email exists
+                throw new IllegalArgumentException();
+            }
+            User user = new User();
+            user.setEmail(request.getEmail());
+            user.setPassword(passwordEncoder.encode(request.getPassword()));
+            user.getRoles().add("ROLE_USER");
+            userRepository.save(user);
+        } catch (Exception e) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Registration failed");
         }
-        User user = new User();
-        user.setUsername(request.getUsername());
-        user.setPassword(passwordEncoder.encode(request.getPassword()));
-        user.getRoles().add("ROLE_USER");
-        userRepository.save(user);
     }
 
     public AccessTokenResponse refresh(@Valid RefreshTokenRequest request) {
@@ -70,4 +77,3 @@ public class AuthenticationService {
         refreshTokenService.revoke(request.getRefreshToken());
     }
 }
-

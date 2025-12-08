@@ -51,4 +51,12 @@ public class GlobalExceptionHandler {
         body.put("fields", errors);
         return ResponseEntity.badRequest().body(body);
     }
+
+    @ExceptionHandler(org.springframework.web.server.ResponseStatusException.class)
+    public ResponseEntity<Map<String, Object>> handleResponseStatusException(org.springframework.web.server.ResponseStatusException ex) {
+        Map<String, Object> body = new HashMap<>();
+        body.put("error", "registration_failed");
+        body.put("message", "Registration failed");
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(body);
+    }
 }
