@@ -5,10 +5,10 @@ It allows users to record transactions, which can be either **income** or **expe
 
 ## Features
 
+- Authentication and Authorization
 - Add, update, and delete transactions (income or expense)
 - Categorize transactions
 - Tag transactions
-- View summaries and charts grouped by transaction type
 - Secure REST API
 
 ## Tech Stack
